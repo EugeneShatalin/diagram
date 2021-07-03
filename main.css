@@ -1,0 +1,17 @@
+.text {
+  font-size: 26px;
+}
+
+div {
+  margin: 30px;
+}
+
+.hide {
+  display: none;
+}
+
+.error {
+  color: red;
+  font-size: 18px;
+  margin-left: 350px;
+}
