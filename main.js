@@ -5,8 +5,8 @@ window.addEventListener('DOMContentLoaded', () => {
       buttonDrawDiagram = document.querySelector('#draw-diagram'),
       sectionValue = document.querySelectorAll('.section-value'),        
       selectValue = document.querySelectorAll('.color-input'),
-      errorText = document.querySelector('.error'),
-      error = false;
+      errorText = document.querySelector('#error'),     
+      errorText2 = document.querySelector('#error2');
 
 
 //набор данных для отрисовки
@@ -19,15 +19,15 @@ let data = {
 
 let colorsData = ["#fde23e", "#f16e23", "#57d9ff","#937e88"];
 
-function newDataAndColors(values, colorsSections, sectionValue) {
-  debugger;  
+function newDataAndColors(values, colorsSections, sectionValue) {   
   data = {};
   colorsData = [];
   for(let i = 0; i < values; i++) {
-    data[`"${i}"`] = +sectionValue[i].value;
+    if(sectionValue[i].value){
+      data[`"${i}"`] = +sectionValue[i].value;
+    }    
     colorsData.push( String(colorsSections[i].value));    
-  }
-  debugger; 
+  }  
   return data, colorsData;
 }
 
@@ -36,9 +36,10 @@ buttonDrawSections.addEventListener('click', () => {
     let section = document.querySelector(`#block${i+1}`);    
     section.classList.add('hide');    
     buttonDrawDiagram.classList.add('hide');
-    sectionValue[i].value = '';    
+    sectionValue[i].value = '';
+    selectValue[i].value = '';    
   }
-    if(quantitySections.value > 6) { 
+    if(quantitySections.value > 6 || quantitySections.value < 1) { 
       errorText.classList.remove('hide');      
     } else {      
       errorText.classList.add('hide');
@@ -50,19 +51,38 @@ buttonDrawSections.addEventListener('click', () => {
   }
 })
 
-buttonDrawDiagram.addEventListener('click', () => {
-  console.log(quantitySections.value)  
+buttonDrawDiagram.addEventListener('click', () => {   
   newDataAndColors(quantitySections.value, selectValue, sectionValue);
+
+  if(!isEmpty(data, quantitySections.value)) {
+      errorText2.classList.remove('hide');
+  } else {
+    errorText2.classList.add('hide');
+
+    var myPiechart2 = new Piechart(  
+      {
+          canvas: myCanvas,
+          data: data,
+          colors: colorsData
+      }  
+    );
+    myPiechart2.draw();   
+  }
    
-  var myPiechart2 = new Piechart(  
-    {
-        canvas: myCanvas,
-        data: data,
-        colors: colorsData
-    }  
-  );
-  myPiechart2.draw();    
 })
+
+//проверка объекта на пустоту
+function isEmpty(obj, sizeObj) {
+  let quantityKeys = 0;
+  for (let key in obj) {
+    quantityKeys++  
+  }  
+  if(+quantityKeys === +sizeObj) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 //----Диаграмма---Начало---
 
@@ -141,5 +161,4 @@ var myPiechart = new Piechart(
   }  
 );
 myPiechart.draw();
-
 })
